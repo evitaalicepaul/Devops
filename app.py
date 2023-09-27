@@ -1,9 +1,12 @@
-from flask import Flask, request
+from flask import Flask, request, redirect, url_for
+
 import random
 
 app = Flask(__name__)
 number_to_guess = random.randint(1, 10)
 guess_count = 0
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -12,6 +15,7 @@ def home():
     wrong_guess = False
     success = False
     invalid_input = False
+
     
     if request.method == 'POST':
         user_input = request.form['guess']
@@ -93,9 +97,7 @@ def home():
             </div>
             <button type="submit" class="btn btn-primary">Guess</button>
         </form>
-         <form action="/restart" method="POST">
-        <button type="submit" class="btn btn-warning mt-3">Restart</button>
-    </form>
+        
         ''' + (f'<p class="mt-3 { "success" if success else "danger" }">{ message }</p>' if message else '') + '''
     </div>
     <script>
@@ -104,38 +106,34 @@ def home():
             document.body.style.backgroundColor = '#ff0000'; // Change background to red
         }
         const success = ''' + str(success).lower() + ''';
-        if (success) {
-            // Create confetti elements
-            for (let i = 0; i < 100; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.top = Math.random() * 100 + 'vh';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-                confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
-                document.body.appendChild(confetti);
-            }
-            // Animate confetti falling
-            const allConfetti = document.querySelectorAll('.confetti');
-            allConfetti.forEach((el) => {
-                el.style.transition = 'all 2s linear';
-                el.style.top = (Math.random() * 100 + 100) + 'vh';
-                el.style.opacity = 0;
-            });
-            // Remove confetti after animation ends
-            setTimeout(() => {
-                allConfetti.forEach((el) => el.remove());
-            }, 2000);
-        }
+if (success) {
+    // Create confetti elements
+    for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.top = Math.random() * 100 + 'vh';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+        document.body.appendChild(confetti);
+    }
+    // Animate confetti falling
+    const allConfetti = document.querySelectorAll('.confetti');
+    allConfetti.forEach((el) => {
+        el.style.transition = 'all 2s linear';
+        el.style.top = (Math.random() * 100 + 100) + 'vh';
+        el.style.opacity = 0;
+    });
+    // Remove confetti after animation ends
+    setTimeout(() => {
+        allConfetti.forEach((el) => el.remove());
+    }, 2000);
+}
+
+        
     </script>
     '''
-@app.route('/restart', methods=['POST'])
-def restart():
-    global number_to_guess
-    global guess_count
-    number_to_guess = random.randint(1, 10)
-    guess_count = 0
-    return redirect(url_for('home'))
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
